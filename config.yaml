@@ -22,11 +22,13 @@ params:
   # Social links
   socialIcons:
     - name: github
-      url: 'https://github.com/N00BFACE'
+      url: 'https://github.com/bishalsthadev'
     - name: linkedin
       url: 'https://linkedin.com/in/bishal-shrestha-404553274'
     - name: email
       url: 'mailto:bishalkumar45657@gmail.com'
+    - name: wordpress
+      url: 'https://profiles.wordpress.org/rainynewt'
   
   # Show social icons
   ShowReadingTime: false

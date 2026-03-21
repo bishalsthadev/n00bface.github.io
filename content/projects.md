@@ -4,23 +4,34 @@ date: 2024-01-01
 draft: false
 ---
 
-## AI-Powered Content Automation
+## WP Travel Engine
+*WordPress Plugin · 20,000+ active installs*
 
-**New Feature**
+Full-featured travel booking plugin with itinerary management, availability scheduling, and multi-gateway payment support.
 
-**Goal:** Automated recipe and image creation within a plugin environment.
-
-**Technologies:** **ChatGPT API**, **TogetherAI API**, PHP.
-
-**Achievement:** Implemented logic to pass context-rich information to the API, enabling seamless, partial, and full recipe generation by the AI engine.
+🔗 [wordpress.org/plugins/wp-travel-engine](https://wordpress.org/plugins/wp-travel-engine)
 
 ---
 
-## WP Travel Engine & Delicious Recipes
+## WP Delicious (Delicious Recipes)
+*WordPress Plugin · 4,000+ active installs*
 
-**WordPress Plugins**
+Recipe management plugin with AI recipe generation, nutrition tracking, meal planning, and Chicory grocery integration.
 
-**Focus:** Contributed to core functionality, developed premium features, and integrated global payment solutions like **Paddle** and Stripe.
+🔗 [wordpress.org/plugins/delicious-recipes](https://wordpress.org/plugins/delicious-recipes)
 
-**Technologies:** PHP, React, Gutenberg Blocks.
+---
 
+## Delisho – Recipe Widgets & Blocks
+*WordPress Plugin*
+
+Gutenberg block library and widget pack extending WP Delicious with customizable recipe display components.
+
+🔗 [wordpress.org/plugins/dr-widgets-blocks](https://wordpress.org/plugins/dr-widgets-blocks)
+
+---
+
+## Multi-Gateway Payment SaaS Platform
+*SaaS · NestJS + NextJS + PostgreSQL*
+
+Platform aggregating multiple payment gateways into a unified system for WordPress and standalone use, built with a CI/CD pipeline.
