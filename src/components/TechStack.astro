@@ -1,0 +1,29 @@
+---
+---
+
+<section class="py-12 overflow-hidden">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <p class="text-center text-[#a1a1aa] text-sm mb-6">Technologies I work with</p>
+    
+    <div class="relative">
+      <div class="flex gap-8 marquee">
+        <!-- First set of tech logos -->
+        <div class="flex gap-8 flex-shrink-0">
+          {['PHP', 'React', 'NestJS', 'NextJS', 'TypeScript', 'PostgreSQL', 'Docker', 'WordPress', 'Stripe', 'PayPal', 'Git', 'Redis'].map((tech) => (
+            <div class="flex items-center gap-2 px-4 py-2 bg-[#18181b] border border-[#27272a] rounded-lg">
+              <span class="text-[#a1a1aa] font-mono text-sm">{tech}</span>
+            </div>
+          ))}
+        </div>
+        <!-- Duplicate for seamless loop -->
+        <div class="flex gap-8 flex-shrink-0">
+          {['PHP', 'React', 'NestJS', 'NextJS', 'TypeScript', 'PostgreSQL', 'Docker', 'WordPress', 'Stripe', 'PayPal', 'Git', 'Redis'].map((tech) => (
+            <div class="flex items-center gap-2 px-4 py-2 bg-[#18181b] border border-[#27272a] rounded-lg">
+              <span class="text-[#a1a1aa] font-mono text-sm">{tech}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

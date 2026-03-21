@@ -1,35 +1,46 @@
-# Bishal Shrestha | WordPress Plugin Developer
+# Astro Starter Kit: Basics
 
-Personal portfolio website built with Hugo and PaperMod theme.
+```sh
+npm create astro@latest -- --template basics
+```
 
-## Local Development
+> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
 
-1. Install Hugo (if not already installed):
-   ```bash
-   brew install hugo
-   ```
+## 🚀 Project Structure
 
-2. Install the PaperMod theme:
-   ```bash
-   git submodule add --depth=1 https://github.com/adityatelange/hugo-PaperMod.git themes/PaperMod
-   git submodule update --init --recursive
-   ```
+Inside of your Astro project, you'll see the following folders and files:
 
-3. Run the development server:
-   ```bash
-   hugo server
-   ```
+```text
+/
+├── public/
+│   └── favicon.svg
+├── src
+│   ├── assets
+│   │   └── astro.svg
+│   ├── components
+│   │   └── Welcome.astro
+│   ├── layouts
+│   │   └── Layout.astro
+│   └── pages
+│       └── index.astro
+└── package.json
+```
 
-4. Visit `http://localhost:1313` in your browser.
+To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
 
-## Deployment
+## 🧞 Commands
 
-This site is automatically deployed to GitHub Pages via GitHub Actions when you push to the `main` branch.
+All commands are run from the root of the project, from a terminal:
 
-## Structure
+| Command                   | Action                                           |
+| :------------------------ | :----------------------------------------------- |
+| `npm install`             | Installs dependencies                            |
+| `npm run dev`             | Starts local dev server at `localhost:4321`      |
+| `npm run build`           | Build your production site to `./dist/`          |
+| `npm run preview`         | Preview your build locally, before deploying     |
+| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `npm run astro -- --help` | Get help using the Astro CLI                     |
 
-- `content/` - Content files (markdown)
-- `static/` - Static files (CSS, images, etc.)
-- `layouts/` - Custom layout overrides
-- `config.yaml` - Hugo configuration
-- `themes/PaperMod/` - PaperMod theme (git submodule)
+## 👀 Want to learn more?
+
+Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
