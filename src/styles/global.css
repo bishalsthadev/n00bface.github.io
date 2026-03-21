@@ -1,20 +1,19 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap');
 
-:root {
-  --background: #0a0a0f;
-  --foreground: #ededed;
-  --muted: #a1a1aa;
-  --accent: #7c3aed;
-  --accent-secondary: #2563eb;
-  --border: #27272a;
-  --card: #18181b;
-  --card-hover: #27272a;
-}
+@theme {
+  --color-background: #0a0a0f;
+  --color-foreground: #ededed;
+  --color-muted: #a1a1aa;
+  --color-accent: #7c3aed;
+  --color-accent-secondary: #2563eb;
+  --color-border: #27272a;
+  --color-card: #18181b;
+  --color-card-hover: #27272a;
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Fira Code", ui-monospace, SFMono-Regular, monospace;
 }
 
 html {
@@ -22,9 +21,9 @@ html {
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: system-ui, -apple-system, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
   line-height: 1.6;
 }
 
@@ -43,21 +42,21 @@ a:hover {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: var(--color-background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: var(--color-border);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--muted);
+  background: var(--color-muted);
 }
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -104,7 +103,7 @@ a:hover {
   top: 0;
   bottom: 0;
   width: 2px;
-  background: linear-gradient(to bottom, var(--accent), var(--accent-secondary));
+  background: linear-gradient(to bottom, var(--color-accent), var(--color-accent-secondary));
 }
 
 /* Marquee animation */
@@ -127,7 +126,7 @@ a:hover {
 
 /* Button styles */
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-secondary) 100%);
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
@@ -145,17 +144,17 @@ a:hover {
 
 .btn-secondary {
   background: transparent;
-  color: var(--foreground);
+  color: var(--color-foreground);
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   font-weight: 600;
   transition: all 0.3s ease;
-  border: 1px solid var(--border);
+  border: 1px solid var(--color-border);
   cursor: pointer;
 }
 
 .btn-secondary:hover {
-  border-color: var(--accent);
+  border-color: var(--color-accent);
   background: rgba(124, 58, 237, 0.1);
 }
 

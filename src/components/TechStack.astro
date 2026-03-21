@@ -1,25 +1,25 @@
 ---
 ---
 
-<section class="py-12 overflow-hidden">
+<section class="py-16 overflow-hidden mt-8">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <p class="text-center text-[#a1a1aa] text-sm mb-6">Technologies I work with</p>
+    <p class="text-center text-muted text-sm mb-8 font-medium">Technologies I work with</p>
     
-    <div class="relative">
+    <div class="relative w-full [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
       <div class="flex gap-8 marquee">
         <!-- First set of tech logos -->
         <div class="flex gap-8 flex-shrink-0">
           {['PHP', 'React', 'NestJS', 'NextJS', 'TypeScript', 'PostgreSQL', 'Docker', 'WordPress', 'Stripe', 'PayPal', 'Git', 'Redis'].map((tech) => (
-            <div class="flex items-center gap-2 px-4 py-2 bg-[#18181b] border border-[#27272a] rounded-lg">
-              <span class="text-[#a1a1aa] font-mono text-sm">{tech}</span>
+            <div class="flex items-center gap-2 px-4 py-2 bg-card/50 backdrop-blur-sm border border-border rounded-lg shadow-sm">
+              <span class="text-muted font-mono text-sm">{tech}</span>
             </div>
           ))}
         </div>
         <!-- Duplicate for seamless loop -->
         <div class="flex gap-8 flex-shrink-0">
           {['PHP', 'React', 'NestJS', 'NextJS', 'TypeScript', 'PostgreSQL', 'Docker', 'WordPress', 'Stripe', 'PayPal', 'Git', 'Redis'].map((tech) => (
-            <div class="flex items-center gap-2 px-4 py-2 bg-[#18181b] border border-[#27272a] rounded-lg">
-              <span class="text-[#a1a1aa] font-mono text-sm">{tech}</span>
+            <div class="flex items-center gap-2 px-4 py-2 bg-card/50 backdrop-blur-sm border border-border rounded-lg shadow-sm">
+              <span class="text-muted font-mono text-sm">{tech}</span>
             </div>
           ))}
         </div>

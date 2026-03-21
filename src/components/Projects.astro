@@ -42,17 +42,17 @@ const otherProjects = projects.filter(p => !p.featured);
 
 <section id="projects" class="py-20">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="text-3xl font-bold text-[#ededed] mb-2">
-      <span class="text-[#7c3aed]">03.</span> Projects
+    <h2 class="text-3xl font-bold text-foreground mb-2">
+      <span class="text-accent">03.</span> Projects
     </h2>
-    <div class="w-24 h-1 bg-gradient-to-r from-[#7c3aed] to-[#2563eb] mb-8"></div>
+    <div class="w-24 h-1 bg-gradient-to-r from-accent to-accent-secondary mb-8"></div>
 
     <!-- Featured Projects -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
       {featuredProjects.map((project) => (
-        <div class="group bg-[#18181b] border border-[#27272a] rounded-xl p-6 hover:border-[#7c3aed] transition-all duration-300">
+        <div class="group bg-card/80 backdrop-blur-md border border-border rounded-xl p-6 hover:border-accent transition-all duration-300 shadow-sm hover:shadow-lg">
           <div class="flex items-start justify-between mb-4">
-            <div class="w-12 h-12 bg-gradient-to-br from-[#7c3aed] to-[#2563eb] rounded-lg flex items-center justify-center">
+            <div class="w-12 h-12 bg-gradient-to-br from-accent to-accent-secondary rounded-lg flex items-center justify-center shadow-lg shadow-accent/20">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
               </svg>
@@ -62,7 +62,7 @@ const otherProjects = projects.filter(p => !p.featured);
                 href={project.link} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                class="text-[#a1a1aa] hover:text-[#7c3aed] transition-colors"
+                class="text-muted hover:text-accent transition-colors"
                 aria-label={`View ${project.name}`}
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -72,13 +72,13 @@ const otherProjects = projects.filter(p => !p.featured);
             )}
           </div>
 
-          <h3 class="text-xl font-semibold text-[#ededed] mb-2 group-hover:text-[#7c3aed] transition-colors">
+          <h3 class="text-xl font-semibold text-foreground mb-2 group-hover:text-accent transition-colors">
             {project.name}
           </h3>
           
           {project.stats && (
-            <div class="inline-flex items-center px-3 py-1 bg-[#7c3aed]/10 text-[#7c3aed] text-sm rounded-full mb-3">
-              <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <div class="inline-flex items-center px-4 py-1.5 bg-accent/15 border border-accent/20 text-accent text-sm font-medium rounded-full mb-4 shadow-[0_0_15px_rgba(124,58,237,0.15)]">
+              <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
                 <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
               </svg>
@@ -86,11 +86,11 @@ const otherProjects = projects.filter(p => !p.featured);
             </div>
           )}
 
-          <p class="text-[#a1a1aa] mb-4">{project.description}</p>
+          <p class="text-muted leading-relaxed mb-6">{project.description}</p>
 
           <div class="flex flex-wrap gap-2">
             {project.technologies.map((tech) => (
-              <span class="px-3 py-1 bg-[#27272a] text-[#a1a1aa] text-xs rounded-full font-mono">
+              <span class="px-3 py-1 bg-border/40 border border-border/60 text-muted text-xs rounded-full font-mono">
                 {tech}
               </span>
             ))}
@@ -102,18 +102,18 @@ const otherProjects = projects.filter(p => !p.featured);
     <!-- Other Projects -->
     {otherProjects.length > 0 && (
       <div>
-        <h3 class="text-xl font-semibold text-[#ededed] mb-6">Other Projects</h3>
+        <h3 class="text-xl font-semibold text-foreground mb-6">Other Projects</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           {otherProjects.map((project) => (
-            <div class="bg-[#18181b] border border-[#27272a] rounded-xl p-5 hover:border-[#2563eb] transition-all duration-300">
+            <div class="bg-card/60 backdrop-blur-sm border border-border rounded-xl p-5 hover:border-accent-secondary transition-all duration-300">
               <div class="flex items-center justify-between mb-3">
-                <h4 class="text-lg font-medium text-[#ededed]">{project.name}</h4>
+                <h4 class="text-lg font-medium text-foreground group-hover:text-accent-secondary">{project.name}</h4>
                 {project.link && (
                   <a 
                     href={project.link} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    class="text-[#a1a1aa] hover:text-[#2563eb] transition-colors"
+                    class="text-muted hover:text-accent-secondary transition-colors"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -121,10 +121,10 @@ const otherProjects = projects.filter(p => !p.featured);
                   </a>
                 )}
               </div>
-              <p class="text-[#a1a1aa] text-sm mb-3">{project.description}</p>
+              <p class="text-muted text-sm leading-relaxed mb-4">{project.description}</p>
               <div class="flex flex-wrap gap-2">
                 {project.technologies.map((tech) => (
-                  <span class="px-2 py-1 bg-[#27272a] text-[#a1a1aa] text-xs rounded-full font-mono">
+                  <span class="px-2.5 py-1 bg-border/40 border border-border/60 text-muted text-xs rounded-full font-mono">
                     {tech}
                   </span>
                 ))}

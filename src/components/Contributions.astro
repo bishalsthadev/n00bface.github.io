@@ -35,19 +35,19 @@ const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Se
 
 <section id="contributions" class="py-20">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="text-3xl font-bold text-[#ededed] mb-2">
-      <span class="text-[#7c3aed]">04.</span> Contributions
+    <h2 class="text-3xl font-bold text-foreground mb-2">
+      <span class="text-accent">04.</span> Contributions
     </h2>
-    <div class="w-24 h-1 bg-gradient-to-r from-[#7c3aed] to-[#2563eb] mb-8"></div>
+    <div class="w-24 h-1 bg-gradient-to-r from-accent to-accent-secondary mb-8"></div>
 
-    <div class="bg-[#18181b] border border-[#27272a] rounded-xl p-6">
+    <div class="bg-card/80 backdrop-blur-md border border-border rounded-xl p-6 overflow-hidden">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-[#ededed]">Contribution Activity</h3>
+        <h3 class="text-lg font-semibold text-foreground">Contribution Activity</h3>
         <a 
           href="https://github.com/bishalsthadev" 
           target="_blank" 
           rel="noopener noreferrer"
-          class="text-[#7c3aed] hover:text-[#7c3aed]/80 text-sm flex items-center gap-1"
+          class="text-accent hover:text-accent/80 text-sm flex items-center gap-1 transition-colors"
         >
           View on GitHub
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,37 +56,41 @@ const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Se
         </a>
       </div>
 
-      <!-- Month labels -->
-      <div class="flex mb-2 ml-10">
-        {weeks.filter((_, i) => i % 4 === 0).map((_, i) => (
-          <div class="flex-1 text-xs text-[#a1a1aa] text-center">
-            {monthLabels[i % 12]}
-          </div>
-        ))}
-      </div>
-
-      <!-- Contribution graph -->
-      <div class="flex gap-1 overflow-x-auto pb-2">
-        {weeks.map((week, weekIndex) => (
-          <div class="flex flex-col gap-1 flex-shrink-0">
-            {week.days.map((day, dayIndex) => (
-              <div
-                class={`w-3 h-3 rounded-sm contrib-cell ${getColorClass(day.count)}`}
-                title={`${day.count} contributions on ${day.date}`}
-              ></div>
+      <div class="overflow-x-auto pb-2 -mx-2 px-2">
+        <div class="min-w-max">
+          <!-- Month labels -->
+          <div class="flex mb-2">
+            {weeks.filter((_, i) => i % 4 === 0).map((_, i) => (
+              <div class="w-[64px] text-xs text-muted text-left pl-1">
+                {monthLabels[i % 12]}
+              </div>
             ))}
           </div>
-        ))}
+
+          <!-- Contribution graph -->
+          <div class="flex gap-1">
+            {weeks.map((week, weekIndex) => (
+              <div class="flex flex-col gap-1 flex-shrink-0">
+                {week.days.map((day, dayIndex) => (
+                  <div
+                    class={`w-3 h-3 rounded-sm contrib-cell ${getColorClass(day.count)} border border-white/5`}
+                    title={`${day.count} contributions on ${day.date}`}
+                  ></div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <!-- Legend -->
-      <div class="flex items-center justify-end gap-2 mt-4 text-xs text-[#a1a1aa]">
+      <div class="flex items-center justify-end gap-2 mt-4 text-xs text-muted">
         <span>Less</span>
-        <div class="w-3 h-3 rounded-sm bg-[#1a1030]"></div>
-        <div class="w-3 h-3 rounded-sm bg-[#3b1d8e]"></div>
-        <div class="w-3 h-3 rounded-sm bg-[#5b21b6]"></div>
-        <div class="w-3 h-3 rounded-sm bg-[#7c3aed]"></div>
-        <div class="w-3 h-3 rounded-sm bg-[#a78bfa]"></div>
+        <div class="w-3 h-3 rounded-sm bg-[#1a1030] border border-white/5"></div>
+        <div class="w-3 h-3 rounded-sm bg-[#3b1d8e] border border-white/5"></div>
+        <div class="w-3 h-3 rounded-sm bg-[#5b21b6] border border-white/5"></div>
+        <div class="w-3 h-3 rounded-sm bg-[#7c3aed] border border-white/5"></div>
+        <div class="w-3 h-3 rounded-sm bg-[#a78bfa] border border-white/5"></div>
         <span>More</span>
       </div>
     </div>
