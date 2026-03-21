@@ -51,9 +51,9 @@
         </p>
 
         <div class="space-y-4">
-          <a 
-            href="mailto:bishalkumar45657@gmail.com"
-            class="flex items-center gap-4 p-4 bg-card/80 backdrop-blur-md border border-border rounded-xl hover:border-accent shadow-sm hover:-translate-y-1 transition-all duration-300 group"
+          <button 
+            id="copy-email-btn"
+            class="w-full text-left flex items-center gap-4 p-4 bg-card/80 backdrop-blur-md border border-border rounded-xl hover:border-accent shadow-sm hover:-translate-y-1 transition-all duration-300 group relative cursor-pointer"
           >
             <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center group-hover:bg-accent/20 transition-colors">
               <svg class="w-6 h-6 text-accent block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,10 +61,13 @@
               </svg>
             </div>
             <div>
-              <p class="text-foreground font-medium">Email</p>
+              <p class="text-foreground font-medium flex items-center gap-2">
+                Email
+                <span id="copy-email-toast" class="opacity-0 translate-y-1 text-xs font-semibold text-[#27c93f] transition-all duration-300">Copied!</span>
+              </p>
               <p class="text-muted text-sm transition-colors group-hover:text-foreground">bishalkumar45657@gmail.com</p>
             </div>
-          </a>
+          </button>
 
           <a 
             href="https://linkedin.com/in/bishal-shrestha-404553274"
@@ -104,3 +107,23 @@
     </div>
   </div>
 </section>
+
+<script>
+  const copyBtn = document.getElementById('copy-email-btn');
+  const toast = document.getElementById('copy-email-toast');
+  
+  if (copyBtn && toast) {
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText('bishalkumar45657@gmail.com');
+        toast.classList.remove('opacity-0', 'translate-y-1');
+        
+        setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-y-1');
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy email: ', err);
+      }
+    });
+  }
+</script>
