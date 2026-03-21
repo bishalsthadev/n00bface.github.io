@@ -1,8 +1,43 @@
 ---
-import { getCollection } from 'astro:content';
+// Projects data
+const projects = [
+  {
+    name: "WP Travel Engine",
+    description: "Full-featured travel booking plugin with itinerary management, availability scheduling, and multi-gateway payment support.",
+    type: "WordPress Plugin",
+    stats: "20,000+ active installs",
+    technologies: ["PHP", "React", "Gutenberg", "REST API"],
+    link: "https://wordpress.org/plugins/wp-travel-engine",
+    featured: true,
+  },
+  {
+    name: "WP Delicious (Delicious Recipes)",
+    description: "Recipe management plugin with AI recipe generation, nutrition tracking, meal planning, and Chicory grocery integration.",
+    type: "WordPress Plugin",
+    stats: "4,000+ active installs",
+    technologies: ["PHP", "React", "AI APIs", "Gutenberg"],
+    link: "https://wordpress.org/plugins/delicious-recipes",
+    featured: true,
+  },
+  {
+    name: "Multi-Gateway Payment SaaS Platform",
+    description: "Platform aggregating multiple payment gateways into a unified system for WordPress and standalone use, built with a CI/CD pipeline.",
+    type: "SaaS Platform",
+    technologies: ["NestJS", "NextJS", "PostgreSQL", "CI/CD"],
+    featured: true,
+  },
+  {
+    name: "Delisho – Recipe Widgets & Blocks",
+    description: "Gutenberg block library and widget pack extending WP Delicious with customizable recipe display components.",
+    type: "WordPress Plugin",
+    technologies: ["PHP", "Gutenberg", "React"],
+    link: "https://wordpress.org/plugins/dr-widgets-blocks",
+    featured: false,
+  },
+];
 
-const projects = await getCollection('projects');
 const featuredProjects = projects.filter(p => p.featured);
+const otherProjects = projects.filter(p => !p.featured);
 ---
 
 <section id="projects" class="py-20">
@@ -65,11 +100,11 @@ const featuredProjects = projects.filter(p => p.featured);
     </div>
 
     <!-- Other Projects -->
-    {projects.filter(p => !p.featured).length > 0 && (
+    {otherProjects.length > 0 && (
       <div>
         <h3 class="text-xl font-semibold text-[#ededed] mb-6">Other Projects</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {projects.filter(p => !p.featured).map((project) => (
+          {otherProjects.map((project) => (
             <div class="bg-[#18181b] border border-[#27272a] rounded-xl p-5 hover:border-[#2563eb] transition-all duration-300">
               <div class="flex items-center justify-between mb-3">
                 <h4 class="text-lg font-medium text-[#ededed]">{project.name}</h4>
