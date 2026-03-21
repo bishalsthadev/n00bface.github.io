@@ -1,7 +1,7 @@
 ---
 ---
 
-<section id="hero" class="min-h-screen flex items-center justify-center pt-16">
+<section id="about" class="min-h-screen flex items-center justify-center pt-16">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
     <p class="text-[#7c3aed] font-mono text-sm mb-4">Hi, my name is</p>
     
@@ -24,15 +24,45 @@
       <p class="font-mono text-sm">
         <span class="text-[#7c3aed]">$</span>
         <span class="text-[#ededed] ml-2">whoami</span>
-        <span class="terminal-cursor">_</span>
       </p>
-      <p class="font-mono text-sm text-[#a1a1aa] mt-2">
-        &gt; Backend Developer<br/>
-        &gt; WordPress Plugin Expert<br/>
-        &gt; Payment Gateway Integration<br/>
-        &gt; AI API Integration
-      </p>
+      <p id="typing-output" class="font-mono text-sm text-[#a1a1aa] mt-2 min-h-[6rem]"></p>
     </div>
+
+    <script>
+      const roles = [
+        'Backend Developer',
+        'WordPress Plugin Expert',
+        'Payment Gateway Integration',
+        'AI API Integration',
+      ];
+      const output = document.getElementById('typing-output');
+      if (output) {
+        let roleIndex = 0;
+        let charIndex = 0;
+        let lines: string[] = [];
+        let isDeleting = false;
+
+        function tick() {
+          const current = roles[roleIndex];
+          if (!isDeleting) {
+            charIndex++;
+            const displayed = [...lines, '> ' + current.slice(0, charIndex)].join('\n');
+            output.textContent = displayed;
+            if (charIndex === current.length) {
+              lines.push('> ' + current);
+              charIndex = 0;
+              roleIndex++;
+              if (roleIndex < roles.length) {
+                setTimeout(tick, 400);
+              }
+              return;
+            }
+            setTimeout(tick, 55);
+          }
+        }
+        setTimeout(tick, 600);
+      }
+    </script>
 
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
       <a href="#projects" class="btn-primary">

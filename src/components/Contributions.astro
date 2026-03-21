@@ -1,5 +1,10 @@
 ---
-// Generate contribution data for the last year
+// Seeded deterministic pseudo-random (stable across builds)
+function seededRand(seed: number): number {
+  const x = Math.sin(seed + 1) * 10000;
+  return x - Math.floor(x);
+}
+
 const today = new Date();
 const weeks: { days: { date: string; count: number }[] }[] = [];
 
@@ -8,23 +13,21 @@ for (let i = 52; i >= 0; i--) {
   for (let j = 0; j < 7; j++) {
     const date = new Date(today);
     date.setDate(date.getDate() - (i * 7 + (6 - j)));
-    // Generate random contribution counts (higher for recent dates)
+    const dateStr = date.toISOString().split('T')[0];
+    const seed = parseInt(dateStr.replace(/-/g, ''), 10);
     const recencyFactor = 1 - (i / 52);
-    const count = Math.floor(Math.random() * 10 * recencyFactor + Math.random() * 5);
-    weekDays.push({
-      date: date.toISOString().split('T')[0],
-      count,
-    });
+    const count = Math.floor(seededRand(seed) * 10 * recencyFactor + seededRand(seed + 7) * 5);
+    weekDays.push({ date: dateStr, count });
   }
   weeks.push({ days: weekDays });
 }
 
 function getColorClass(count: number): string {
-  if (count === 0) return 'bg-[#161b22]';
-  if (count <= 3) return 'bg-[#0e4429]';
-  if (count <= 6) return 'bg-[#006d32]';
-  if (count <= 9) return 'bg-[#26a641]';
-  return 'bg-[#39d353]';
+  if (count === 0) return 'bg-[#1a1030]';
+  if (count <= 3) return 'bg-[#3b1d8e]';
+  if (count <= 6) return 'bg-[#5b21b6]';
+  if (count <= 9) return 'bg-[#7c3aed]';
+  return 'bg-[#a78bfa]';
 }
 
 const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -79,11 +82,11 @@ const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Se
       <!-- Legend -->
       <div class="flex items-center justify-end gap-2 mt-4 text-xs text-[#a1a1aa]">
         <span>Less</span>
-        <div class="w-3 h-3 rounded-sm bg-[#161b22]"></div>
-        <div class="w-3 h-3 rounded-sm bg-[#0e4429]"></div>
-        <div class="w-3 h-3 rounded-sm bg-[#006d32]"></div>
-        <div class="w-3 h-3 rounded-sm bg-[#26a641]"></div>
-        <div class="w-3 h-3 rounded-sm bg-[#39d353]"></div>
+        <div class="w-3 h-3 rounded-sm bg-[#1a1030]"></div>
+        <div class="w-3 h-3 rounded-sm bg-[#3b1d8e]"></div>
+        <div class="w-3 h-3 rounded-sm bg-[#5b21b6]"></div>
+        <div class="w-3 h-3 rounded-sm bg-[#7c3aed]"></div>
+        <div class="w-3 h-3 rounded-sm bg-[#a78bfa]"></div>
         <span>More</span>
       </div>
     </div>
