@@ -16,6 +16,37 @@
   --font-mono: "Fira Code", ui-monospace, SFMono-Regular, monospace;
 }
 
+/* ---- Theme tokens ---- */
+/* Dark is the default. The no-FOUC script in BaseLayout stamps
+   data-theme on <html> from localStorage or the OS preference. */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --contrib-0: #1a1030;
+  --contrib-1: #3b1d8e;
+  --contrib-2: #5b21b6;
+  --contrib-3: #7c3aed;
+  --contrib-4: #a78bfa;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-background: #fafafa;
+  --color-foreground: #18181b;
+  --color-muted: #52525b;
+  --color-accent: #6d28d9;
+  --color-accent-secondary: #2563eb;
+  --color-border: #e4e4e7;
+  --color-card: #ffffff;
+  --color-card-hover: #f4f4f5;
+
+  --contrib-0: #ebedf0;
+  --contrib-1: #d8c7f5;
+  --contrib-2: #b794f4;
+  --contrib-3: #8b5cf6;
+  --contrib-4: #6d28d9;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -25,7 +56,42 @@ body {
   color: var(--color-foreground);
   font-family: var(--font-sans);
   line-height: 1.6;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
+
+/* Terminal window: stays dark in BOTH themes (a terminal is a terminal).
+   Re-scopes the theme tokens locally so child utilities render light-on-dark. */
+.terminal-window {
+  --color-foreground: #ededed;
+  --color-muted: #a1a1aa;
+  --color-border: #27272a;
+  --color-card: #18181b;
+  --color-accent: #a78bfa;
+  --color-accent-secondary: #60a5fa;
+  background-color: #0d1117;
+}
+
+/* Shell-prompt eyebrow above section headings */
+.prompt {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+.prompt .prompt-user { color: var(--color-accent-secondary); }
+.prompt .prompt-path { color: var(--color-accent); }
+.prompt .prompt-sym { color: var(--color-muted); }
+
+/* Theme toggle icons: show the icon for the active theme */
+.icon-moon,
+.icon-sun { display: none; }
+:root[data-theme="dark"] .icon-moon { display: block; }
+:root[data-theme="light"] .icon-sun { display: block; }
+
+/* Contribution graph cells (theme-aware) */
+.contrib-0 { background-color: var(--contrib-0); }
+.contrib-1 { background-color: var(--contrib-1); }
+.contrib-2 { background-color: var(--contrib-2); }
+.contrib-3 { background-color: var(--contrib-3); }
+.contrib-4 { background-color: var(--contrib-4); }
 
 a {
   color: inherit;

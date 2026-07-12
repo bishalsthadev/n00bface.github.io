@@ -15,10 +15,11 @@ const dateFmt = new Intl.DateTimeFormat('en-US', {
 {posts.length > 0 && (
   <section id="writing" class="py-20">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="prompt mb-3">
+        <span class="prompt-user">bishal@portfolio</span><span class="prompt-sym">:</span><span class="prompt-path">~/blog</span><span class="prompt-sym">$</span> ls -t | head
+      </p>
       <div class="flex items-end justify-between mb-2 gap-4">
-        <h2 class="text-3xl font-bold text-foreground">
-          <span class="text-accent">05.</span> Writing
-        </h2>
+        <h2 class="text-3xl font-bold text-foreground">Writing</h2>
         <a href="/blog" class="text-sm text-accent hover:text-accent-secondary transition-colors whitespace-nowrap">
           View all posts →
         </a>
