@@ -15,7 +15,7 @@ Three constraints shaped the design.
 
 ## Constraint 1: Only poll when the market is actually open
 
-NEPSE trades **Sunday–Thursday**, roughly **11:00–15:00 NPT**. Polling outside that window is
+NEPSE trades **Monday–Friday**, roughly **11:00–15:00 NPT**. Polling outside that window is
 pure waste — the numbers don't move. So the cron schedule is deliberately narrow. Cloudflare
 **Cron Triggers** fire the Worker's `scheduled()` handler, and I gate each tick against the
 trading calendar before doing any network work:
@@ -26,7 +26,7 @@ export async function runCron(cron: string, env: Env) {
 
   switch (cron) {
     case '*/3 * * * *':  return pollLatestPrices(env); // intraday
-    case '30 15 * * 0-4': return persistEndOfDay(env);  // once, after close
+    case '30 15 * * 1-5': return persistEndOfDay(env);  // once, after close
   }
 }
 ```
