@@ -1,0 +1,94 @@
+---
+title: "Why I Built a Real-Time Stock Engine for $0/Month Using Cloudflare Workers"
+description: "How I used Cloudflare's edge compute, D1, and KV to run a live NEPSE alert engine — Telegram bot, portfolio tracking, and a technical screener — with no servers to maintain and no monthly bill."
+pubDate: 2026-07-12
+tags: ["Cloudflare", "Serverless", "TypeScript", "Architecture"]
+---
+
+I wanted a personal assistant for the **Nepal Stock Exchange (NEPSE)** — price alerts,
+portfolio P/L, market news, and a technical screener — pushed to me on Telegram. What I
+*didn't* want was a VPS to patch, a database to babyby, or a monthly invoice for something
+only I use.
+
+So I built [NEPSE Alert](https://github.com/bishalsthadev/nepse-alert) to run **entirely on
+Cloudflare's free tier**. No origin server. No container. No cron box. The whole thing lives
+at the edge, and the running cost is **$0/month**.
+
+## The whole stack is Cloudflare
+
+The trick is that Cloudflare gives you every primitive a small backend needs, and the free
+tier limits are generous enough that a personal project never comes close to them.
+
+| Concern | Traditional stack | What I used |
+|---|---|---|
+| Compute | VPS / container running 24/7 | **Cloudflare Workers** (pay-per-request, scales to zero) |
+| Database | Managed Postgres | **D1** (SQLite at the edge) |
+| Cache / hot state | Redis | **KV** |
+| Scheduling | `cron` on a always-on box | **Cron Triggers** |
+| Telegram delivery | Long-polling process | **grammY** over webhooks |
+
+There's no process sitting idle waiting for work. A Worker spins up only when a request
+arrives or a cron fires, does its job in a few milliseconds, and disappears.
+
+## Why "scale to zero" is the whole point
+
+A personal tool has an ugly cost profile on traditional hosting: it's *idle* 99% of the time,
+but you still pay for the box to exist so it's ready the other 1%. NEPSE only trades
+**Sunday–Thursday during market hours**, so a dedicated server would spend most of its life
+burning money to do nothing.
+
+Workers invert that. I pay (in the free tier, nothing) only for the requests I actually
+serve and the cron ticks that actually fire. Outside market hours the engine costs literally
+zero because nothing runs.
+
+## Splitting hot state from durable state
+
+The two Cloudflare storage primitives map cleanly onto two different jobs:
+
+- **D1 (SQLite)** holds everything durable and relational — accumulated daily OHLC history,
+  my holdings, and alert rules. It's the source of truth, and the technical screener reads
+  weeks of history out of it.
+- **KV** holds the hot, disposable state — the *latest* price for each symbol and a
+  dedupe key so the same alert doesn't fire twice. KV is eventually consistent and blazing
+  fast to read at the edge, which is exactly right for "what's the last price I saw?"
+
+Everything that touches the database goes through a single repository layer (`src/db/`), so
+the rest of the code never writes raw SQL. If I ever outgrow D1, that's the only directory
+that changes.
+
+```ts
+// One Worker entry handles HTTP routes AND scheduled events.
+export default {
+  async fetch(request, env, ctx) {
+    // dashboard, JSON API, and the Telegram webhook
+    return router.handle(request, env, ctx);
+  },
+  async scheduled(event, env, ctx) {
+    // cron dispatch: price polling, EOD persistence, news digest
+    ctx.waitUntil(runCron(event.cron, env));
+  },
+};
+```
+
+That single `index.ts` is the entire deployment. `wrangler deploy` ships it worldwide in a
+few seconds.
+
+## What you actually get
+
+- **Price & threshold alerts** pushed to Telegram (buy/sell levels, % moves, volume spikes)
+- **Portfolio tracking** with live value and P/L
+- **A technical screener** computing SMA / EMA / RSI / MACD over accumulated history
+- **A web dashboard** with a market overview and a searchable stock picker
+
+All of it on infrastructure that costs nothing when the market is closed and pennies (well,
+free-tier pennies) when it isn't.
+
+## Try it / read the code
+
+The live dashboard is at **[stock.bishalstha.info.np](https://stock.bishalstha.info.np)**,
+and the full source — 100% TypeScript — is on
+**[GitHub](https://github.com/bishalsthadev/nepse-alert)**.
+
+In the next two posts I'll go deeper on the hard parts: [staying under NEPSE's rate limits
+with edge cron](/blog/serverless-cron-rate-limiting-nepse), and [wiring up the Telegram
+notification layer inside a stateless Worker](/blog/telegram-notification-workers).

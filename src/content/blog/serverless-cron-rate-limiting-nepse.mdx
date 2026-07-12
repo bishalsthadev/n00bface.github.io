@@ -1,0 +1,95 @@
+---
+title: "Overcoming Rate-Limiting and Cron Restrictions in Serverless Financial Trackers"
+description: "NEPSE has no public API and doesn't love being polled. Here's how I use Cloudflare Cron Triggers aligned to market hours to fetch data efficiently — without IP blocks or runaway CPU."
+pubDate: 2026-07-10
+tags: ["Cloudflare", "Serverless", "Cron", "TypeScript"]
+---
+
+The hard part of [NEPSE Alert](https://github.com/bishalsthadev/nepse-alert) was never the
+Telegram bot or the dashboard. It was the *ingestion*: NEPSE has **no official public API**,
+its endpoints are token-authenticated, and — like any exchange site — it does not enjoy being
+hammered by a scraper. A naive `setInterval` polling loop would either get my IP throttled or
+blow through CPU budget doing work when the market is closed.
+
+Three constraints shaped the design.
+
+## Constraint 1: Only poll when the market is actually open
+
+NEPSE trades **Sunday–Thursday**, roughly **11:00–15:00 NPT**. Polling outside that window is
+pure waste — the numbers don't move. So the cron schedule is deliberately narrow. Cloudflare
+**Cron Triggers** fire the Worker's `scheduled()` handler, and I gate each tick against the
+trading calendar before doing any network work:
+
+```ts
+export async function runCron(cron: string, env: Env) {
+  if (!isTradingWindow(new Date())) return; // closed → do nothing, spend nothing
+
+  switch (cron) {
+    case '*/3 * * * *':  return pollLatestPrices(env); // intraday
+    case '30 15 * * 0-4': return persistEndOfDay(env);  // once, after close
+  }
+}
+```
+
+Because a Worker **scales to zero**, "do nothing" genuinely means *no compute is billed*.
+There's no idle process, so there's no idle cost — the opposite of a cron job on an
+always-on server.
+
+## Constraint 2: Don't get IP-blocked
+
+Getting live data means talking to NEPSE's token-authenticated endpoints. The access token
+isn't handed out — it has to be **derived**, and I do that in pure TypeScript
+(`src/nepse/token.ts`) so there's no headless browser and no third-party dependency in the
+hot path. A single Worker request derives the token, fetches the payload, and exits.
+
+The rate-limiting defense is a combination of:
+
+- **A coarse cadence.** Intraday polling runs every few minutes, not every few seconds.
+  For alerting on thresholds that's more than enough resolution.
+- **Fan-in through KV.** I fetch the market snapshot *once per tick* and write the latest
+  price per symbol into **KV**. Every alert rule and every dashboard hit then reads from KV,
+  not from NEPSE. One upstream request fans out to serve everything.
+- **Dedupe keys.** KV also stores an alert-dedupe marker so a crossed threshold notifies me
+  once, not on every subsequent poll while it stays crossed.
+
+The upstream sees one polite request on a fixed rhythm. Everything else is served from the
+edge cache.
+
+## Constraint 3: Stay inside the CPU budget
+
+Workers bill CPU time, and the free tier caps per-invocation CPU. That's a feature here — it
+forces the ingestion to be lean. Two things keep it comfortable:
+
+**Scraping with `HTMLRewriter`.** Market news, dividends, and IPO notices come from
+ShareSansar. Instead of loading an HTML string into a DOM parser (memory- and CPU-hungry),
+I stream the response through Cloudflare's native **`HTMLRewriter`**, which fires callbacks
+on matching elements as bytes arrive:
+
+```ts
+const items: NewsItem[] = [];
+await new HTMLRewriter()
+  .on('.news-list .title a', {
+    text(t) { /* accumulate headline text */ },
+    element(el) { items.push({ href: el.getAttribute('href')! }); },
+  })
+  .transform(response)
+  .arrayBuffer();
+```
+
+No full-document parse, no big allocation — it's effectively free.
+
+**Deferring durable work.** The heavy write — persisting a full day of OHLC into D1 — runs
+in a *single* end-of-day cron, not on every intraday tick. History accumulates one row per
+symbol per trading day, which is all the technical screener needs (it wants ~20 trading days
+before it'll emit a signal anyway).
+
+## The payoff
+
+The result is an ingestion pipeline that is polite to NEPSE, cheap to run, and correct about
+*when* to work. It only wakes during market hours, makes one upstream request per tick, fans
+that out through KV, and defers durable writes to a single daily job.
+
+Next up: [how the Telegram notification layer works inside a stateless
+Worker](/blog/telegram-notification-workers). The source is on
+**[GitHub](https://github.com/bishalsthadev/nepse-alert)** and the live dashboard is at
+**[stock.bishalstha.info.np](https://stock.bishalstha.info.np)**.

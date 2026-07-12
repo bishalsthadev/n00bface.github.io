@@ -1,0 +1,100 @@
+---
+title: "Designing Asynchronous Notification Workers via Web Crypto and Telegram APIs"
+description: "How the NEPSE Alert notification layer runs inside a stateless Cloudflare Worker — verifying Telegram webhooks with a secret token, keeping the response fast, and pushing alerts asynchronously."
+pubDate: 2026-07-08
+tags: ["Cloudflare", "Telegram", "Serverless", "TypeScript"]
+---
+
+A Worker is **stateless** — it starts, handles one event, and dies. There's no long-running
+process to "hold" a Telegram connection open. So the notification layer in
+[NEPSE Alert](https://github.com/bishalsthadev/nepse-alert) is built around two directions of
+traffic, both of which have to work without any persistent runtime:
+
+1. **Inbound:** Telegram calls *me* when I send the bot a command (`/price`, `/portfolio`, …).
+2. **Outbound:** a cron tick decides an alert should fire and calls the Telegram API to push
+   me a message.
+
+## Webhooks, not long-polling
+
+The classic way to run a Telegram bot is long-polling: a process loops forever calling
+`getUpdates`. That's a non-starter on Workers — there's no forever. So the bot runs on
+**webhooks**. I register a URL once, and Telegram POSTs an update to it whenever something
+happens:
+
+```bash
+curl -X POST "https://api.telegram.org/bot<TOKEN>/setWebhook" \
+  -d "url=https://<domain>/telegram/<WEBHOOK_SECRET>" \
+  -d "secret_token=<WEBHOOK_SECRET>"
+```
+
+Each update becomes a single Worker invocation. The bot logic (built on **grammY**) parses
+the command, does its work, and returns. No idle process, no polling loop.
+
+## Verifying the caller before doing anything
+
+A public webhook URL is, by definition, callable by anyone who finds it. Two layers keep it
+locked down.
+
+**A secret in the path and the header.** When Telegram sends an update, it includes the
+`secret_token` I registered in the `X-Telegram-Bot-Api-Secret-Token` header. The Worker
+checks it *before* parsing the body. Workers expose the standard **Web Crypto API**, so a
+comparison that matters for security can be done properly rather than with a naive `===`:
+
+```ts
+function safeEqual(a: string, b: string) {
+  const enc = new TextEncoder();
+  const ab = enc.encode(a), bb = enc.encode(b);
+  if (ab.length !== bb.length) return false;
+  let diff = 0;
+  for (let i = 0; i < ab.length; i++) diff |= ab[i] ^ bb[i];
+  return diff === 0; // constant-time: doesn't leak where the mismatch is
+}
+
+if (!safeEqual(req.headers.get('X-Telegram-Bot-Api-Secret-Token') ?? '', env.WEBHOOK_SECRET)) {
+  return new Response('forbidden', { status: 403 });
+}
+```
+
+**Owner lock.** Even a valid Telegram update is only acted on if it comes from *my* chat.
+The bot is pinned to a single `OWNER_TELEGRAM_ID`, so this is a personal assistant, not a
+public service. The same idea gates the web dashboard behind a `WEB_ACCESS_KEY`.
+
+## Answer fast, work in the background
+
+Telegram expects a webhook to reply quickly or it retries the delivery. But some commands do
+real work — hitting NEPSE, reading D1, computing indicators. The stateless-Worker escape
+hatch for this is `ctx.waitUntil()`: acknowledge the update immediately, then let the actual
+work finish *after* the response is sent.
+
+```ts
+async fetch(req, env, ctx) {
+  const update = await req.json();
+  // hand off the slow part; the Worker stays alive to finish it
+  ctx.waitUntil(handleCommand(update, env));
+  return new Response('ok'); // Telegram is happy right away
+}
+```
+
+The outbound alerts work the same way. A cron tick evaluates alert rules, and for each one
+that fires it POSTs to the Telegram `sendMessage` endpoint — a plain `fetch()` from the edge,
+no SDK connection to maintain. The dedupe key in KV (from the [ingestion
+post](/blog/serverless-cron-rate-limiting-nepse)) ensures a crossed threshold pings me once,
+not on every subsequent poll.
+
+## Why this shape works
+
+Everything about the notification layer is a reaction to statelessness:
+
+- **Webhooks** replace the long-poll loop the runtime can't hold open.
+- **`waitUntil`** replaces the background worker/queue you'd reach for on a server.
+- **A registered secret + Web Crypto comparison** replaces the trust you'd get from a
+  private network.
+- **Plain `fetch` to the Bot API** replaces a persistent client connection.
+
+The bot feels like an always-on assistant, but nothing is ever actually "on." Each message
+is a fresh few milliseconds of compute at the edge.
+
+The full source is on **[GitHub](https://github.com/bishalsthadev/nepse-alert)**, and the
+live dashboard — market overview and stock picker — is at
+**[stock.bishalstha.info.np](https://stock.bishalstha.info.np)**. This wraps the three-part
+tour that started with [the $0/month architecture](/blog/cloudflare-stock-engine-zero-cost).

@@ -7,6 +7,8 @@ interface Props {
 }
 
 const { title, description = 'Backend Developer specializing in WordPress Plugin Development, payment gateway integration, and AI-powered features.' } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
 ---
 
 <!doctype html>
@@ -15,7 +17,11 @@ const { title, description = 'Backend Developer specializing in WordPress Plugin
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <link rel="canonical" href="https://portfolio.bishalstha.info.np/" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
     <title>{title}</title>
   </head>
   <body>

@@ -1,0 +1,63 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const dateFmt = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout title={`${post.data.title} - Bishal Shrestha`} description={post.data.description}>
+  <Navbar />
+  <main class="pt-28 pb-20">
+    <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <a href="/blog" class="text-sm text-muted hover:text-accent transition-colors">← All posts</a>
+
+      <header class="mt-6 mb-10">
+        <div class="flex items-center gap-3 text-xs text-muted font-mono mb-4">
+          <time datetime={post.data.pubDate.toISOString()}>
+            {dateFmt.format(post.data.pubDate)}
+          </time>
+          {post.data.tags.length > 0 && <span class="text-border">/</span>}
+          <div class="flex flex-wrap gap-2">
+            {post.data.tags.map((tag) => (
+              <span class="px-2 py-0.5 bg-border/40 border border-border/60 rounded-full">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-bold text-foreground leading-tight mb-4">
+          {post.data.title}
+        </h1>
+        <p class="text-lg text-muted leading-relaxed">{post.data.description}</p>
+        <div class="w-24 h-1 bg-gradient-to-r from-accent to-accent-secondary mt-6"></div>
+      </header>
+
+      <div class="prose">
+        <Content />
+      </div>
+    </article>
+  </main>
+
+  <footer class="border-t border-border py-8 mt-12">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+      <a href="/blog" class="text-sm text-muted hover:text-accent transition-colors">← All posts</a>
+      <a href="/#contact" class="text-sm text-muted hover:text-accent transition-colors">Get in touch →</a>
+    </div>
+  </footer>
+</BaseLayout>
