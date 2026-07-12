@@ -1,7 +1,8 @@
 export default {
-  name: "Multi-Gateway Payment SaaS Platform",
-  description: "Platform aggregating multiple payment gateways into a unified system for WordPress and standalone use, built with a CI/CD pipeline.",
+  name: "PayLexer",
+  description: "Middleware connecting WordPress plugins to 27+ payment gateways — including Stripe, PayPal, Paystack, and Xendit — with no-code setup, a unified dashboard, and integrations for WooCommerce, WP Travel Engine, and Easy Digital Downloads.",
   type: "SaaS Platform",
   technologies: ["NestJS", "NextJS", "PostgreSQL", "CI/CD"],
+  link: "https://paylexer.com",
   featured: true,
 };
