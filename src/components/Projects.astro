@@ -3,6 +3,7 @@
 const projects = [
   {
     name: "NEPSE Alert",
+    logo: null,
     description: "Personal Nepal Stock Exchange assistant — price/threshold alerts, portfolio tracking, market news, and a technical screener (SMA/EMA/RSI/MACD), delivered Telegram-first with a web dashboard. Runs entirely on Cloudflare Workers.",
     type: "Full-Stack App",
     technologies: ["TypeScript", "Cloudflare Workers", "D1", "KV", "grammY"],
@@ -11,6 +12,7 @@ const projects = [
   },
   {
     name: "WP Travel Engine",
+    logo: "/logos/wp-travel-engine.png",
     description: "Full-featured travel booking plugin with itinerary management, availability scheduling, and multi-gateway payment support.",
     type: "WordPress Plugin",
     stats: "20,000+ active installs",
@@ -20,6 +22,7 @@ const projects = [
   },
   {
     name: "WP Delicious (Delicious Recipes)",
+    logo: "/logos/wp-delicious.jpg",
     description: "Recipe management plugin with AI recipe generation, nutrition tracking, meal planning, and Chicory grocery integration.",
     type: "WordPress Plugin",
     stats: "4,000+ active installs",
@@ -29,6 +32,7 @@ const projects = [
   },
   {
     name: "PayLexer",
+    logo: "/logos/paylexer-mark.png",
     description: "Middleware connecting WordPress plugins to 27+ payment gateways — including Stripe, PayPal, Paystack, and Xendit — with no-code setup, a unified dashboard, and integrations for WooCommerce, WP Travel Engine, and Easy Digital Downloads.",
     type: "SaaS Platform",
     technologies: ["NestJS", "NextJS", "PostgreSQL", "CI/CD"],
@@ -37,6 +41,7 @@ const projects = [
   },
   {
     name: "Delisho – Recipe Widgets & Blocks",
+    logo: "/logos/delisho.png",
     description: "Gutenberg block library and widget pack extending WP Delicious with customizable recipe display components.",
     type: "WordPress Plugin",
     technologies: ["PHP", "Gutenberg", "React"],
@@ -62,11 +67,25 @@ const otherProjects = projects.filter(p => !p.featured);
       {featuredProjects.map((project) => (
         <div class="group bg-card/80 backdrop-blur-md border border-border rounded-xl p-6 hover:border-accent transition-all duration-300 shadow-sm hover:shadow-lg">
           <div class="flex items-start justify-between mb-4">
-            <div class="w-12 h-12 bg-gradient-to-br from-accent to-accent-secondary rounded-lg flex items-center justify-center shadow-lg shadow-accent/20">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-              </svg>
-            </div>
+            {project.logo ? (
+              <div class="w-12 h-12 rounded-lg overflow-hidden bg-white/5 border border-border/60 flex items-center justify-center shadow-lg shadow-black/20">
+                <img
+                  src={project.logo}
+                  alt={`${project.name} logo`}
+                  width="48"
+                  height="48"
+                  loading="lazy"
+                  decoding="async"
+                  class="w-full h-full object-contain"
+                />
+              </div>
+            ) : (
+              <div class="w-12 h-12 bg-gradient-to-br from-accent to-accent-secondary rounded-lg flex items-center justify-center shadow-lg shadow-accent/20">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                </svg>
+              </div>
+            )}
             {project.link && (
               <a 
                 href={project.link} 
@@ -88,9 +107,9 @@ const otherProjects = projects.filter(p => !p.featured);
           
           {project.stats && (
             <div class="inline-flex items-center px-4 py-1.5 bg-accent/15 border border-accent/20 text-accent text-sm font-medium rounded-full mb-4 shadow-[0_0_15px_rgba(124,58,237,0.15)]">
-              <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+              <svg class="w-4 h-4 mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3.5v9.5m0 0l-3.5-3.5M12 13l3.5-3.5" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 16v2.5a2 2 0 002 2h11a2 2 0 002-2V16" />
               </svg>
               {project.stats}
             </div>
@@ -117,7 +136,20 @@ const otherProjects = projects.filter(p => !p.featured);
           {otherProjects.map((project) => (
             <div class="bg-card/60 backdrop-blur-sm border border-border rounded-xl p-5 hover:border-accent-secondary transition-all duration-300">
               <div class="flex items-center justify-between mb-3">
-                <h4 class="text-lg font-medium text-foreground group-hover:text-accent-secondary">{project.name}</h4>
+                <div class="flex items-center gap-3 min-w-0">
+                  {project.logo && (
+                    <img
+                      src={project.logo}
+                      alt={`${project.name} logo`}
+                      width="32"
+                      height="32"
+                      loading="lazy"
+                      decoding="async"
+                      class="w-8 h-8 rounded-md object-contain bg-white/5 border border-border/60 shrink-0"
+                    />
+                  )}
+                  <h4 class="text-lg font-medium text-foreground group-hover:text-accent-secondary truncate">{project.name}</h4>
+                </div>
                 {project.link && (
                   <a 
                     href={project.link} 
