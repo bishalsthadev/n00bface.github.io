@@ -1,0 +1,101 @@
+---
+title: "Why I Built a WordPress Plugin That Quarantines Instead of Deleting Database Bloat"
+description: "Attic audits your WordPress database for orphaned options, ghost cron events, stranded transients, and leftover tables — then quarantines them instead of dropping them, so nothing breaks."
+pubDate: 2026-08-31
+tags: ["WordPress", "PHP", "Open Source"]
+---
+
+Every WordPress site accumulates database bloat. Uninstalled plugins leave behind autoloaded
+options that load on every page request, ghost cron events that fire into the void, stranded
+transients, and orphaned tables. The standard fix is a "cleanup" plugin that runs aggressive
+`DELETE` and `DROP` queries.
+
+The problem is that those queries don't know what's safe to remove. If a plugin stores its
+settings in an option that *looks* orphaned but is actually referenced in your theme's
+`functions.php`, a blind cleanup breaks your site.
+
+I wanted something safer. So I built
+[Attic](https://wordpress.org/plugins/attic-safe-database-audit/) — a read-only WordPress
+database audit that **quarantines instead of deleting**, and **scans your code before it
+calls anything orphaned**.
+
+## The two rules everything else follows
+
+1. **Quarantine, never delete.** Options are backed up before removal. Tables are renamed
+   (`wp_attic_quarantined_*`), never dropped. Everything is restorable for 30 days.
+
+2. **Nothing is called orphaned until your code has been searched for it.** Attic streams
+   `wp-content` — plugins, mu-plugins, themes, `wp-config.php` — looking for every candidate
+   name before promoting anything to high confidence.
+
+Every finding shows its full evidence inline: which rule fired, what it's attributed to,
+whether that plugin still exists on disk, how many code references were found, and the size.
+A finding you can't audit is a finding you shouldn't act on.
+
+## What the scan actually finds
+
+Attic runs five detection rules on each scan:
+
+| Rule | What it catches |
+|---|---|
+| **Autoload bloat** | Oversized options that load on every page request, ranked against Site Health's 800 KB line |
+| **Ghost cron events** | Scheduled hooks with no registered callback, firing forever and doing nothing |
+| **Orphaned tables** | Tables no installed plugin claims, with reclaimable megabytes up front |
+| **Stranded transients** | Expired timeout pairs and orphaned rows |
+| **Deleted plugin data** | Options left behind by plugins whose owning plugin is absent from disk |
+
+Each rule works in budgeted batches — a few hundred rows per tick, with wall-clock and
+memory limits — so a large site scans without timing out or exhausting PHP's memory.
+
+## How the code-aware confidence works
+
+This is the part I'm most proud of. Most cleanup plugins flag anything uninstalled as
+"safe to remove." Attic doesn't.
+
+After the initial scan finds candidates, a **reference scan** walks every PHP file in
+`wp-content` looking for literal matches of each candidate name. If your code references
+an option, that finding gets demoted to "review" instead of "high" confidence. The result
+is a confidence level that actually means something:
+
+- **High** — plugin absent from disk, zero code references found
+- **Review** — some ambiguity (plugin present but volatile, or references exist)
+- **Info** — flagged for awareness, not action
+
+You should never act on a "review" finding without understanding what it is first. That's
+the point.
+
+## The quarantine system
+
+When you quarantine something, Attic doesn't touch the database directly. For options, it
+serializes the full row into a JSON payload, then calls `delete_option()`. For tables, it
+does a `RENAME` — instant and fully intact, regardless of table size. Every action is
+tracked in a batch, and a whole batch can be restored in one click.
+
+```sql
+-- Quarantine is a RENAME, not a DROP
+RENAME TABLE wp_options_backup TO wp_attic_quarantined_options_backup;
+```
+
+Batches auto-purge after 30 days (configurable). The only code path in the entire plugin
+that drops anything is the purge — and that's behind a typed confirmation and the undo
+window.
+
+## The tech stack
+
+Attic is a standard WordPress plugin — PHP 8.1+, no build step, no npm dependencies,
+no external services. The scan engine runs entirely over WordPress AJAX, with each tick
+getting a small time and memory budget. Findings are stored in a custom table
+(`wp_attic_findings`) and the scan state lives in `wp_options` as non-autoloaded cursors.
+
+The hardest part was making the scan feel responsive on a site with 50,000+ autoloaded
+options. The budgeted tick system means each AJAX request does a bounded amount of work
+and returns a progress percentage to the frontend, which renders a progress bar. The scan
+resumes exactly where it left off on the next tick.
+
+## Open source and on WordPress.org
+
+Attic is [on WordPress.org](https://wordpress.org/plugins/attic-safe-database-audit/) and
+the source is on
+[GitHub](https://github.com/bishalsthadev/attic). It's GPL-3.0, no upsell, no pro
+version, no telemetry. If you manage WordPress sites and care about database health, give
+it a try — and if you find a bug, open an issue.
